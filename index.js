@@ -7,7 +7,7 @@
 
   axios.get(Index_URL)
     .then(res => {
-      console.log(res.data.results)
+      // console.log(res.data.results)
       //避免data.push(res.data.results)讓data變成只有一個item的陣列
       //方法一:迭代器
       // for (let item of res.data.results) {
@@ -29,17 +29,45 @@
             <div class="card-body movie-item-body">
               <h6 class="card-title">${item.title}</h6>
             </div>
+            <div class="card-footer">
+              <button type="button" class="btn btn-primary btn-show-movie" data-toggle="modal" data-target="#show-movie-modal" data-id="${item.id}">More</button>
+            </div>
           </div>
         </div>
       `
     })
     dataPanel.innerHTML = htmlContent
   }
-  let arr = ['a', 'b', 'c']
-  arr.forEach((item, index, array) => {
-    console.log(item)
-    console.log(index)
-    console.log(array)
-    console.log(' --- 分隔線 ---')
+
+  // listen to data panel
+  dataPanel.addEventListener('click', (event) => {
+    if (event.target.matches('.btn-show-movie')) {
+      console.log(event.target.dataset.id)
+      showMovie(event.target.dataset.id)  //show movie Modal
+    }
   })
+
+  //show movie Modal
+  function showMovie(id) {
+    //get elements
+    const modalTitle = document.querySelector('#show-movie-title')
+    const modalImage = document.querySelector('#show-movie-image')
+    const modalDate = document.querySelector('#show-movie-date')
+    const modalDescription = document.querySelector('#show-movie-description')
+    //set request url
+    const url = Index_URL + id
+    console.log(url)
+    //send request to show api
+    axios.get(url)
+      .then(res => {
+        const data = res.data.results
+        console.log(data)
+        //insert data into modal ui
+        modalTitle.textContent = data.title
+        modalImage.innerHTML = `<img src="${POSTER_URL}${data.image}" class="img-fluid" alt="responsive image">`
+        modalDate.textContent = `release at : ${data.release_date}`
+        modalDescription.textContent = `${data.description}`
+      })
+    // .catch((err) => { console.log(err) })
+  }
 })()
