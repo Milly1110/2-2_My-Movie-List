@@ -76,9 +76,13 @@
   // search movie 
   searchForm.addEventListener('submit', event => {
     event.preventDefault()  //終止button發出HTTP request的預設行為
-    console.log('click')
+    // console.log('click')
+    let input = searchInput.value.toLowerCase()
+    let results = data.filter(
+      movie => movie.title.toLowerCase().includes(input)
+    )
+    console.log(results)
+    displayDataList(results)
   })
-  // function search() {
 
-  // }
 })()
