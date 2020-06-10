@@ -4,6 +4,8 @@
   const POSTER_URL = BASE_URL + 'posters/'
   const data = []  //存放res資料
   const dataPanel = document.querySelector('#data-panel')
+  const searchForm = document.querySelector('#search')
+  const searchInput = document.querySelector('#search-input')
 
   axios.get(Index_URL)
     .then(res => {
@@ -68,6 +70,15 @@
         modalDate.textContent = `release at : ${data.release_date}`
         modalDescription.textContent = `${data.description}`
       })
-    // .catch((err) => { console.log(err) })
+      .catch((err) => { console.log(err) })
   }
+
+  // search movie 
+  searchForm.addEventListener('submit', event => {
+    event.preventDefault()  //終止button發出HTTP request的預設行為
+    console.log('click')
+  })
+  // function search() {
+
+  // }
 })()
