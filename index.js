@@ -6,6 +6,9 @@
   const dataPanel = document.querySelector('#data-panel')
   const searchForm = document.querySelector('#search')
   const searchInput = document.querySelector('#search-input')
+  const pagination = document.querySelector('#pagination')
+  const ITEM_PER_PAGE = 12
+  let paginationData = []
 
   axios.get(Index_URL)
     .then(res => {
@@ -18,6 +21,8 @@
       //方法二:利用spread operator展開陣列元素
       data.push(...res.data.results)
       displayDataList(data)  //資料成功放入data後，調用函式把data的內容輸出至網頁
+      getTotalPages(data)  //顯示分頁頁碼欄
+      getPageData(1, data)
     })
     .catch(err => { console.log(err) })
 
@@ -90,6 +95,8 @@
     )  //運用filter篩選data陣列內容跟input相符的元素
     console.log(results)
     displayDataList(results)  //將filter篩選出的結果顯示到畫面
+    getTotalPages(results)
+    getPageData(1, results)
   })
 
   //add movie to favorite
@@ -107,4 +114,29 @@
     localStorage.setItem('favoriteMovies', JSON.stringify(list))  //取得localStorage資料時，因為value為string type，要用JSON.stringify(obj)
   }
 
+  //分頁功能(Pagination)
+  function getTotalPages(data) {
+    let totalPages = Math.ceil(data.length / ITEM_PER_PAGE) || 1
+    let pageItemContent = ''
+    for (let i = 0; i < totalPages; i++) {
+      pageItemContent += `
+        <li class="page-item">
+          <a class="page-link" href="javascript:;" data-page="${i + 1}">${i + 1}</a>
+        </li>
+      `   //pagination的a標籤不會觸發跳頁，實務上加入javascript:;字串，註明這個a標籤會觸發JS程式
+    }
+    pagination.innerHTML = pageItemContent
+  }
+  pagination.addEventListener('click', event => {
+    console.log(event.target.dataset.page)
+    if (event.target.tagName === 'A') {
+      getPageData(event.target.dataset.page)
+    }
+  })
+  function getPageData(pageNum, data) {
+    paginationData = data || paginationData  //如果getPageData有data傳入，則使用傳入的data，若無則沿用pagination = []的內容，確保slice可執行
+    let offset = (pageNum - 1) * ITEM_PER_PAGE
+    let pageData = paginationData.slice(offset, offset + ITEM_PER_PAGE)
+    displayDataList(pageData)
+  }
 })()
